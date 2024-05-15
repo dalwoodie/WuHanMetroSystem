@@ -8,6 +8,7 @@ public class App {
         //new SystemStartJFrame();
         new Test1().test();
         new Test2().test();
+        //new Test3();
 
 
     }
