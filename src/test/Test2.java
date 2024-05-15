@@ -21,8 +21,8 @@ public class Test2 extends Test1{
 
     @Override
     public void test() throws IOException{
-        super.readtxt();
-        this.readtxt();
+        this.readtxt1();
+        this.readtxt2();
         Scanner scanner = new Scanner(System.in);
         System.out.println("请输入站点名：");
         String startStationName = scanner.nextLine();
@@ -52,7 +52,6 @@ public class Test2 extends Test1{
         Set<Station> check = new HashSet<>();
         Map<Station, Double> distanceMap = new HashMap<>(); // 记录每个车站的最小累计距离
         queue.offer(startStation);
-        startStation.setVisited(true);
         distanceMap.put(startStation, 0.0);
         check.add(startStation);
 
@@ -63,9 +62,8 @@ public class Test2 extends Test1{
             for (AdjacentStation adjacent : stationAndNext.get(currentStation)) {
                 Station nextStation = adjacent.getStation();
                 double nextDistance = Math.round((currentDistance + adjacent.getDistance()) * 1000.0) / 1000.0;
-                if (!nextStation.isVisited() && nextDistance < n && this.check(check,nextStation)) {
+                if (nextDistance < n && this.check(check,nextStation)) {
                     check.add(adjacent.getStation());
-                    nextStation.setVisited(true);
                     queue.offer(nextStation);
                     distanceMap.put(nextStation, nextDistance);
                 }
@@ -98,8 +96,7 @@ public class Test2 extends Test1{
         return null;
     }
 
-    @Override
-    public void readtxt() throws IOException {
+    public void readtxt2() throws IOException {
         FileReader subwaytxt = new FileReader("C:\\Users\\zhong\\source\\wuhansubwaysystem\\subway.txt");
         int sub;
         while ((sub = subwaytxt.read()) != -1) {

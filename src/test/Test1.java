@@ -47,7 +47,7 @@ public class Test1 {
     }
 
     public void test() throws IOException {
-        this.readtxt();
+        this.readtxt1();
         for (String station:TransforStationlist.keySet()){
             if (TransforStationlist.get(station).size()>1){
                 StringBuilder sb = new StringBuilder();
@@ -64,7 +64,7 @@ public class Test1 {
         }
     }
 
-    public void readtxt() throws IOException {
+    public void readtxt1() throws IOException {
         FileReader subwaytxt = new FileReader("C:\\Users\\zhong\\source\\wuhansubwaysystem\\subway.txt");
         int sub;
         String line = "";
