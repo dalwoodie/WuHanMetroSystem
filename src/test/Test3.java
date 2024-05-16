@@ -9,7 +9,7 @@ import java.util.*;
 public class Test3 extends Test2{
     // 用来存储所有找到的路径及其总距离
     ArrayList<List<Station>> allPaths = new ArrayList<>();
-    Map<List<Station>, Double> pathDistances = new HashMap<>();
+    Map<List<Station>, Double> allPathAndDistances = new HashMap<>();
 
     @Override
     public void test()throws IOException {
@@ -29,23 +29,35 @@ public class Test3 extends Test2{
             System.out.println("终点站点未找到！");
             return;
         }
+        List<Station> path = new ArrayList<>();
+        Set<Station> visited = new HashSet<>();
+        this.dfs(path,startStation,destinationStation,visited);
+        for (List<Station> P : allPaths) {
+            System.out.print("<");
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < P.size(); i++) {
+                sb.append(P.get(i).getName()).append("、");
+            }
+            sb.setLength(sb.length() - 1);//移除最后一个顿号
+            String transfor = sb.toString();
+            System.out.println(transfor + ">");
+            System.out.println(String.format("%.3f",allPathAndDistances.get(P)));
 
-
-
+        }
     }
 
     // 深度优先搜索来找到所有路径
     public void dfs(List<Station> path, Station current, Station destination, Set<Station> visited) {
-        path.add(current); // 将当前车站添加到路径中
-
+        // 将当前车站添加到路径中
+        path.add(current);
         if (current.equals(destination)) {
             // 到达目的地，记录路径和距离
             double totalDistance = calculateTotalDistance(path);
             allPaths.add(new ArrayList<>(path));
-            pathDistances.put(new ArrayList<>(path), totalDistance);
-        } else {
+            allPathAndDistances.put(new ArrayList<>(path), totalDistance);
+        }
+        else {
             visited.add(current); // 标记当前车站为已访问
-
             // 遍历所有相邻车站
             for (AdjacentStation adjacent : getStationAndNext().getOrDefault(current, Collections.emptySet())) {
                 if (!visited.contains(adjacent.getStation())) {
@@ -73,14 +85,13 @@ public class Test3 extends Test2{
         return total;
     }
 
-    // 找到并返回最短路径
+   /* // 找到并返回最短路径
     public List<Station> findShortestPath(Station start, Station destination) {
         if (start == null || destination == null) return null;
         List<Station> path = new ArrayList<>();
         Set<Station> visited = new HashSet<>();
 
         dfs(path, start, destination, visited);
-
         // 如果没有找到路径，返回null
         if (allPaths.isEmpty()) return null;
 
@@ -95,5 +106,7 @@ public class Test3 extends Test2{
             }
         }
         return shortestPath;
-    }
+    }*/
+
+    //
 }

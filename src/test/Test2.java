@@ -38,32 +38,23 @@ public class Test2 extends Test1{
         this.bfs(stationAndNext, startStation, n);
     }
 
-    public boolean check(Set<Station> check,Station station){
-        for (Station s1 : check) {
-            if (station.equals(s1)){
-                return false;
-            }
-        }
-        return true;
-    }
-
     public void bfs(Map<Station, Set<AdjacentStation>> stationAndNext, Station startStation, double n) {
         LinkedList<Station> queue = new LinkedList<>();
-        Set<Station> check = new HashSet<>();
-        Map<Station, Double> distanceMap = new HashMap<>(); // 记录每个车站的最小累计距离
+        Set<Station> visited = new HashSet<>();
+        Map<Station, Double> distanceMap = new HashMap<>();
         queue.offer(startStation);
         distanceMap.put(startStation, 0.0);
-        check.add(startStation);
+        visited.add(startStation);
 
         while (!queue.isEmpty()) {
             Station currentStation = queue.poll();
-            check.add(currentStation);
+            visited.add(currentStation);
             double currentDistance = distanceMap.get(currentStation);
             for (AdjacentStation adjacent : stationAndNext.get(currentStation)) {
                 Station nextStation = adjacent.getStation();
-                double nextDistance = Math.round((currentDistance + adjacent.getDistance()) * 1000.0) / 1000.0;
-                if (nextDistance < n && this.check(check,nextStation)) {
-                    check.add(adjacent.getStation());
+                double nextDistance = (Math.round((currentDistance + adjacent.getDistance()) * 1000.0) )/ 1000.0;
+                if (nextDistance < n && !visited.contains(nextStation)) {
+                    visited.add(adjacent.getStation());
                     queue.offer(nextStation);
                     distanceMap.put(nextStation, nextDistance);
                 }
@@ -71,19 +62,17 @@ public class Test2 extends Test1{
         }
         distanceMap.remove(startStation);
         for (Map.Entry<Station, Double> entry : distanceMap.entrySet()) {
-            if (entry.getValue() < n) {
-                String station = entry.getKey().getName();
-                System.out.print("<" + station + ", ");
-                StringBuilder sb = new StringBuilder();
-                for (String line : getTransforStationlist().get(station)) {
-                    sb.append(line).append("、");
-                }
-                sb.setLength(sb.length() - 1);//移除最后一个顿号
-                sb.append(", ");
-                String transfor = sb.toString();
-                System.out.print(transfor);
-                System.out.println( entry.getValue() + ">");
+            String station = entry.getKey().getName();
+            System.out.print("<" + station + ", ");
+            StringBuilder sb = new StringBuilder();
+            for (String line : getTransforStationlist().get(station)) {
+                sb.append(line).append("、");
             }
+            sb.setLength(sb.length() - 1);//移除最后一个顿号
+            sb.append(", ");
+            String transfor = sb.toString();
+            System.out.print(transfor);
+            System.out.println( entry.getValue() + ">");
         }
     }
 
