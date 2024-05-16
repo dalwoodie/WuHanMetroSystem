@@ -13,7 +13,7 @@ public class Test1 {
     private ArrayList<Character> bufferlist = new ArrayList<>(MAX_LENGTH_30);
     private Map<String, Set<String>> TransforStationlist = new HashMap<>();
 
-    public void test() throws IOException {
+    public void test1() throws IOException {
         this.readtxt1();
         for (String station:TransforStationlist.keySet()){
             if (TransforStationlist.get(station).size()>1){

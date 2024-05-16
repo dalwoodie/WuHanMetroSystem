@@ -11,9 +11,9 @@ import java.util.regex.Pattern;
 
 public class Test2 extends Test1{
     private Map<Station,Set<AdjacentStation>> stationAndNext = new HashMap<>();
+    private Map<Station, Double> distanceMap = new HashMap<>();
 
-    @Override
-    public void test() throws IOException{
+    public void test2() throws IOException{
         this.readtxt1();
         this.readtxt2();
         Scanner scanner = new Scanner(System.in);
@@ -29,12 +29,24 @@ public class Test2 extends Test1{
         }
         // 执行BFS搜索
         this.bfs(stationAndNext, startStation, n);
+        for (Map.Entry<Station, Double> entry : distanceMap.entrySet()) {
+            String station = entry.getKey().getName();
+            System.out.print("<" + station + ", ");
+            StringBuilder sb = new StringBuilder();
+            for (String line : getTransforStationlist().get(station)) {
+                sb.append(line).append("、");
+            }
+            sb.setLength(sb.length() - 1);//移除最后一个顿号
+            sb.append(", ");
+            String transfor = sb.toString();
+            System.out.print(transfor);
+            System.out.println(String.format("%.3f",entry.getValue()) + ">");
+        }
     }
 
     public void bfs(Map<Station, Set<AdjacentStation>> stationAndNext, Station startStation, double n) {
         LinkedList<Station> queue = new LinkedList<>();
         Set<Station> visited = new HashSet<>();
-        Map<Station, Double> distanceMap = new HashMap<>();
         queue.offer(startStation);
         distanceMap.put(startStation, 0.0);
         visited.add(startStation);
@@ -54,19 +66,6 @@ public class Test2 extends Test1{
             }
         }
         distanceMap.remove(startStation);
-        for (Map.Entry<Station, Double> entry : distanceMap.entrySet()) {
-            String station = entry.getKey().getName();
-            System.out.print("<" + station + ", ");
-            StringBuilder sb = new StringBuilder();
-            for (String line : getTransforStationlist().get(station)) {
-                sb.append(line).append("、");
-            }
-            sb.setLength(sb.length() - 1);//移除最后一个顿号
-            sb.append(", ");
-            String transfor = sb.toString();
-            System.out.print(transfor);
-            System.out.println(String.format("%.3f",entry.getValue()) + ">");
-        }
     }
 
     public Station findStationByName (Set < Station > stations, String name){
@@ -125,5 +124,13 @@ public class Test2 extends Test1{
 
     public void setStationAndNext(Map<Station, Set<AdjacentStation>> stationAndNext) {
         this.stationAndNext = stationAndNext;
+    }
+
+    public Map<Station, Double> getDistanceMap() {
+        return distanceMap;
+    }
+
+    public void setDistanceMap(Map<Station, Double> distanceMap) {
+        this.distanceMap = distanceMap;
     }
 }
