@@ -11,6 +11,14 @@ public class Test3 extends Test2{
     ArrayList<List<Station>> allPaths = new ArrayList<>();
     Map<List<Station>, Double> allPathAndDistances = new HashMap<>();
 
+    public Test3() {
+    }
+
+    public Test3(ArrayList<List<Station>> allPaths, Map<List<Station>, Double> allPathAndDistances) {
+        this.allPaths = allPaths;
+        this.allPathAndDistances = allPathAndDistances;
+    }
+
     @Override
     public void test()throws IOException {
         this.readtxt2();
@@ -55,6 +63,7 @@ public class Test3 extends Test2{
             double totalDistance = calculateTotalDistance(path);
             allPaths.add(new ArrayList<>(path));
             allPathAndDistances.put(new ArrayList<>(path), totalDistance);
+            this.findShorterPath();
         }
         else {
             visited.add(current); // 标记当前车站为已访问
@@ -85,28 +94,54 @@ public class Test3 extends Test2{
         return total;
     }
 
-   /* // 找到并返回最短路径
-    public List<Station> findShortestPath(Station start, Station destination) {
-        if (start == null || destination == null) return null;
-        List<Station> path = new ArrayList<>();
-        Set<Station> visited = new HashSet<>();
-
-        dfs(path, start, destination, visited);
-        // 如果没有找到路径，返回null
-        if (allPaths.isEmpty()) return null;
-
-        // 筛选距离最短的路径
-        List<Station> shortestPath = allPaths.get(0);
-        double shortestDistance = pathDistances.get(shortestPath);
-        for (List<Station> p : allPaths) {
-            double distance = pathDistances.get(p);
-            if (distance < shortestDistance) {
-                shortestPath = p;
-                shortestDistance = distance;
+    //路径中有相同站点则保留较短路径
+    public void findShorterPath(){
+        ArrayList<Station> currentPath = new ArrayList<>(allPaths.get(allPaths.size()-1));
+        //遍历除了当前path外所有的path
+        for (int i = 0; i < allPaths.size()- 1; i++){
+            ArrayList<Station> path = new ArrayList<>(allPaths.get(i));
+            //遍历除了起点终点的所有车站
+            for (int j = 1; j < currentPath.size()- 1; j++){
+                String currentName = currentPath.get(j).getName();
+                for (Station s1 : path) {
+                    if (currentName == s1.getName()) {
+                        double currentDistance = 0;
+                        double distance = 0;
+                        for (List<Station> P : allPathAndDistances.keySet()) {
+                            if (P == currentPath) {
+                                currentDistance = allPathAndDistances.get(P);
+                            }
+                            if (P == path) {
+                                distance = allPathAndDistances.get(P);
+                            }
+                        }
+                        if (currentDistance >= distance) {
+                            allPaths.remove(currentPath);
+                            allPathAndDistances.remove(currentPath);
+                        } else {
+                            allPaths.remove(path);
+                            allPathAndDistances.remove(path);
+                        }
+                        break;
+                    }
+                }
             }
         }
-        return shortestPath;
-    }*/
+    }
 
-    //
+    public ArrayList<List<Station>> getAllPaths() {
+        return allPaths;
+    }
+
+    public void setAllPaths(ArrayList<List<Station>> allPaths) {
+        this.allPaths = allPaths;
+    }
+
+    public Map<List<Station>, Double> getAllPathAndDistances() {
+        return allPathAndDistances;
+    }
+
+    public void setAllPathAndDistances(Map<List<Station>, Double> allPathAndDistances) {
+        this.allPathAndDistances = allPathAndDistances;
+    }
 }

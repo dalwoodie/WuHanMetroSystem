@@ -52,7 +52,7 @@ public class Test2 extends Test1{
             double currentDistance = distanceMap.get(currentStation);
             for (AdjacentStation adjacent : stationAndNext.get(currentStation)) {
                 Station nextStation = adjacent.getStation();
-                double nextDistance = (Math.round((currentDistance + adjacent.getDistance()) * 1000.0) )/ 1000.0;
+                double nextDistance = currentDistance + adjacent.getDistance();
                 if (nextDistance < n && !visited.contains(nextStation)) {
                     visited.add(adjacent.getStation());
                     queue.offer(nextStation);
@@ -72,7 +72,7 @@ public class Test2 extends Test1{
             sb.append(", ");
             String transfor = sb.toString();
             System.out.print(transfor);
-            System.out.println( entry.getValue() + ">");
+            System.out.println(String.format("%.3f",entry.getValue()) + ">");
         }
     }
 
