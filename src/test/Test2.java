@@ -12,13 +12,6 @@ import java.util.regex.Pattern;
 public class Test2 extends Test1{
     private Map<Station,Set<AdjacentStation>> stationAndNext = new HashMap<>();
 
-    public Test2() {
-    }
-
-    public Test2(Map<Station, Set<AdjacentStation>> stationAndNext) {
-        this.stationAndNext = stationAndNext;
-    }
-
     @Override
     public void test() throws IOException{
         this.readtxt1();

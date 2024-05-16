@@ -6,21 +6,13 @@ import station.Station;
 import java.io.IOException;
 import java.util.*;
 
-public class Test3 extends Test2{
+public class Test3 extends Test2 {
     // 用来存储所有找到的路径及其总距离
-    ArrayList<List<Station>> allPaths = new ArrayList<>();
-    Map<List<Station>, Double> allPathAndDistances = new HashMap<>();
-
-    public Test3() {
-    }
-
-    public Test3(ArrayList<List<Station>> allPaths, Map<List<Station>, Double> allPathAndDistances) {
-        this.allPaths = allPaths;
-        this.allPathAndDistances = allPathAndDistances;
-    }
+    private ArrayList<List<Station>> allPaths = new ArrayList<>();
+    private Map<List<Station>, Double> allPathAndDistances = new HashMap<>();
 
     @Override
-    public void test()throws IOException {
+    public void test() throws IOException {
         this.readtxt2();
         Scanner scanner = new Scanner(System.in);
         System.out.println("请输入起始站站点名：");
@@ -39,7 +31,7 @@ public class Test3 extends Test2{
         }
         List<Station> path = new ArrayList<>();
         Set<Station> visited = new HashSet<>();
-        this.dfs(path,startStation,destinationStation,visited);
+        this.dfs(path, startStation, destinationStation, visited);
         for (List<Station> P : allPaths) {
             System.out.print("<");
             StringBuilder sb = new StringBuilder();
@@ -49,23 +41,36 @@ public class Test3 extends Test2{
             sb.setLength(sb.length() - 1);//移除最后一个顿号
             String transfor = sb.toString();
             System.out.println(transfor + ">");
-            System.out.println(String.format("%.3f",allPathAndDistances.get(P)));
-
+            //System.out.println(String.format("%.3f", allPathAndDistances.get(P)));//可以输出总距离
         }
     }
 
-    // 深度优先搜索来找到所有路径
     public void dfs(List<Station> path, Station current, Station destination, Set<Station> visited) {
         // 将当前车站添加到路径中
         path.add(current);
         if (current.equals(destination)) {
-            // 到达目的地，记录路径和距离
             double totalDistance = calculateTotalDistance(path);
-            allPaths.add(new ArrayList<>(path));
-            allPathAndDistances.put(new ArrayList<>(path), totalDistance);
-            this.findShorterPath();
-        }
-        else {
+            ArrayList<List<Station>> copyedAllPaths = new ArrayList<>(allPaths);
+            boolean isNewPath = true;
+            // 检查新路径与已记录路径的重复站点
+            for (List<Station> existingPath : copyedAllPaths) {
+                if (hasDuplicateStations(path, existingPath)) {
+                    double existingDistance = allPathAndDistances.get(existingPath);
+                    // 如果新路径的总距离更短，则替换已记录路径
+                    if (totalDistance < existingDistance) {
+                        allPaths.remove(existingPath);
+                        allPathAndDistances.remove(existingPath);
+                    } else {
+                        isNewPath = false;
+                        break;
+                    }
+                }
+            }
+            if (isNewPath) {
+                allPaths.add(new ArrayList<>(path));
+                allPathAndDistances.put(new ArrayList<>(path), totalDistance);
+            }
+        } else {
             visited.add(current); // 标记当前车站为已访问
             // 遍历所有相邻车站
             for (AdjacentStation adjacent : getStationAndNext().getOrDefault(current, Collections.emptySet())) {
@@ -76,6 +81,14 @@ public class Test3 extends Test2{
             visited.remove(current); // 回溯时取消标记
         }
         path.remove(path.size() - 1); // 回溯时移除当前车站
+    }
+
+    // 检查两条路径是否有重复站点
+    private boolean hasDuplicateStations(List<Station> path1, List<Station> path2) {
+        Set<Station> set1 = new HashSet<>(path1.subList(1, path1.size() - 1)); // 排除起始站和终点站
+        Set<Station> set2 = new HashSet<>(path2.subList(1, path2.size() - 1)); // 排除起始站和终点站
+        set1.retainAll(set2); // 保留共同元素
+        return !set1.isEmpty();
     }
 
     // 计算路径的总距离
@@ -92,41 +105,6 @@ public class Test3 extends Test2{
             }
         }
         return total;
-    }
-
-    //路径中有相同站点则保留较短路径
-    public void findShorterPath(){
-        ArrayList<Station> currentPath = new ArrayList<>(allPaths.get(allPaths.size()-1));
-        //遍历除了当前path外所有的path
-        for (int i = 0; i < allPaths.size()- 1; i++){
-            ArrayList<Station> path = new ArrayList<>(allPaths.get(i));
-            //遍历除了起点终点的所有车站
-            for (int j = 1; j < currentPath.size()- 1; j++){
-                String currentName = currentPath.get(j).getName();
-                for (Station s1 : path) {
-                    if (currentName == s1.getName()) {
-                        double currentDistance = 0;
-                        double distance = 0;
-                        for (List<Station> P : allPathAndDistances.keySet()) {
-                            if (P == currentPath) {
-                                currentDistance = allPathAndDistances.get(P);
-                            }
-                            if (P == path) {
-                                distance = allPathAndDistances.get(P);
-                            }
-                        }
-                        if (currentDistance >= distance) {
-                            allPaths.remove(currentPath);
-                            allPathAndDistances.remove(currentPath);
-                        } else {
-                            allPaths.remove(path);
-                            allPathAndDistances.remove(path);
-                        }
-                        break;
-                    }
-                }
-            }
-        }
     }
 
     public ArrayList<List<Station>> getAllPaths() {

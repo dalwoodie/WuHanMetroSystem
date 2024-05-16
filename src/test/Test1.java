@@ -13,39 +13,6 @@ public class Test1 {
     private ArrayList<Character> bufferlist = new ArrayList<>(MAX_LENGTH_30);
     private Map<String, Set<String>> TransforStationlist = new HashMap<>();
 
-    public Test1() {
-    }
-
-    public Test1(ArrayList<Character> linelist, ArrayList<Character> bufferlist, Map<String, Set<String>> transforStationlist) {
-        this.linelist = linelist;
-        this.bufferlist = bufferlist;
-        TransforStationlist = transforStationlist;
-    }
-
-    public ArrayList<Character> getLinelist() {
-        return linelist;
-    }
-
-    public void setLinelist(ArrayList<Character> linelist) {
-        this.linelist = linelist;
-    }
-
-    public ArrayList<Character> getBufferlist() {
-        return bufferlist;
-    }
-
-    public void setBufferlist(ArrayList<Character> bufferlist) {
-        this.bufferlist = bufferlist;
-    }
-
-    public Map<String, Set<String>> getTransforStationlist() {
-        return TransforStationlist;
-    }
-
-    public void setTransforStationlist(Map<String, Set<String>> transforStationlist) {
-        TransforStationlist = transforStationlist;
-    }
-
     public void test() throws IOException {
         this.readtxt1();
         for (String station:TransforStationlist.keySet()){
@@ -169,5 +136,29 @@ public class Test1 {
         else if (check1 > index || check2 > index) {return false;}
         else if(buffer.charAt(buffer.length()-1)!='\n') {return false;}
         else return matcher.find();
+    }
+
+    public ArrayList<Character> getLinelist() {
+        return linelist;
+    }
+
+    public void setLinelist(ArrayList<Character> linelist) {
+        this.linelist = linelist;
+    }
+
+    public ArrayList<Character> getBufferlist() {
+        return bufferlist;
+    }
+
+    public void setBufferlist(ArrayList<Character> bufferlist) {
+        this.bufferlist = bufferlist;
+    }
+
+    public Map<String, Set<String>> getTransforStationlist() {
+        return TransforStationlist;
+    }
+
+    public void setTransforStationlist(Map<String, Set<String>> transforStationlist) {
+        TransforStationlist = transforStationlist;
     }
 }
