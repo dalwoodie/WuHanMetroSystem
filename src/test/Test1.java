@@ -22,15 +22,14 @@ public class Test1 {
                 for (String line : TransforStationlist.get(station)) {
                     sb.append(line).append("、");
                 }
-                //移除最后一个顿号
-                sb.setLength(sb.length() - 1);
+                sb.setLength(sb.length() - 1); // 移除最后一个顿号
                 sb.append(">>");
                 String transfor = sb.toString();
                 System.out.println(transfor);
             }
         }
     }
-
+    // 读取文件往TransforStationlist中添加数据
     public void readtxt1() throws IOException {
         FileReader subwaytxt = new FileReader("C:\\Users\\zhong\\source\\wuhansubwaysystem\\subway.txt");
         int sub;
@@ -40,7 +39,7 @@ public class Test1 {
             this.addbuffer((char) sub);
             if (this.getline().endsWith("线")) {
                 line = this.getline();
-                continue;
+                continue; // linelist最后一位为“线”时开始新循环
             }
             String buffer = this.getbuffer();
             if (this.check(buffer, buffer.lastIndexOf("---"), "---")) {
@@ -52,26 +51,27 @@ public class Test1 {
                 addright(line, buffer, "—");
             }
         }
-        TransforStationlist.remove(null);
+        TransforStationlist.remove(null); // 移除TransforStationlist中可能的空键
         subwaytxt.close();
     }
-
+    // 往linelist中添加字符
     public void addline(char c) {
         if (linelist.size() == MAX_LENGTH_4) {
             linelist.remove(0);
         }
         linelist.add(c);
     }
-
+    // 往bufferlist中添加字符
     public void addbuffer(char c) {
         if (bufferlist.size() == MAX_LENGTH_30) {
             bufferlist.remove(0);
         }
         bufferlist.add(c);
     }
-
+    // 返回字符串类型的linelist中储存的数据
     public String getline() {
         StringBuilder sb = new StringBuilder();
+        //判断第一位是否为换行符，是的话返回2~4位的字符，否的话返回所有位的字符
         if (linelist.get(0) == '\n') {
             for (int i = 1; i < 4; i++) {
                 sb.append(linelist.get(i));
@@ -83,7 +83,7 @@ public class Test1 {
         }
         return sb.toString();
     }
-
+    // 返回字符串类型的bufferlist中储存的数据
     public String getbuffer() {
         StringBuilder sb = new StringBuilder();
         for (char c : bufferlist) {
@@ -91,74 +91,57 @@ public class Test1 {
         }
         return sb.toString();
     }
-
+    // 将“---”或“—”左边的车站添加到TransforStationlist表中
     public void addleft(String line, String buffer, String connector) {
             String station1 = this.getStationLeft(buffer, buffer.lastIndexOf(connector));
             if (!TransforStationlist.containsKey(station1)) {
-            // 如果键不在Map中，则创建一个新的HashSet并添加到Map中
-            TransforStationlist.put(station1, new HashSet<>());
+                TransforStationlist.put(station1, new HashSet<>()); // 如果键不在Map中，则创建一个新的HashSet并添加到Map中
             }
             TransforStationlist.get(station1).add(line);
     }
-
+    // 将“---”或“—”右边的车站添加到TransforStationlist表中
     public void addright(String line, String buffer, String connector) {
             String station2 = this.getStationRight(buffer, buffer.lastIndexOf(connector), connector);
             if (!TransforStationlist.containsKey(station2)) {
-            // 如果键不在Map中，则创建一个新的HashSet并添加到Map中
-            TransforStationlist.put(station2, new HashSet<>());
+                TransforStationlist.put(station2, new HashSet<>()); // 如果键不在Map中，则创建一个新的HashSet并添加到Map中
             }
             TransforStationlist.get(station2).add(line);
     }
 
     public String getStationLeft(String buffer, int index) {
-            int leftNewlineIndex = buffer.lastIndexOf('\n', index);
-        // 截取connector左边直到换行符前的所有字符
-        return buffer.substring(leftNewlineIndex, index).trim();
+        int leftNewlineIndex = buffer.lastIndexOf('\n', index);
+        return buffer.substring(leftNewlineIndex, index).trim(); // 截取connector左边直到换行符前的所有字符
     }
 
     public String getStationRight(String buffer, int index, String connector) {
-            int rightSpaceIndex = buffer.indexOf('\t', index + connector.length());
-            // 截取connector右边直到空格前的所有字符
-        return buffer.substring(index + connector.length(), rightSpaceIndex).trim();
+        int rightSpaceIndex = buffer.indexOf('\t', index + connector.length());
+        return buffer.substring(index + connector.length(), rightSpaceIndex).trim(); // 截取connector右边直到制表符的所有字符
     }
 
     public boolean check(String buffer, int index, String connector) {
         int leftNewlineIndex = buffer.lastIndexOf('\n', index); //查找connector左边的换行符位置
         int rightSpaceIndex = buffer.indexOf('\t', index + connector.length()); //查找connector右边的空格位置
-        // 查找connector到最后有没有“---”或“—”
-        int check1 = buffer.lastIndexOf("---");
-        int check2 = buffer.lastIndexOf("—");
-        //正则确定最后几位是公里数
+        int check1 = buffer.lastIndexOf("---"); // 最右边的"---"的位置
+        int check2 = buffer.lastIndexOf("—"); // 最右边的"—"的位置
+        // 正则表达式确定最后几位是公里数
         Pattern pattern = Pattern.compile("(?s).*(\\t[0-9](\\.[0-9]+)?)$");
         Matcher matcher = pattern.matcher(buffer);
 
-        if (leftNewlineIndex == -1 || rightSpaceIndex == -1) {return false;}
-        else if (check1 > index || check2 > index) {return false;}
-        else if(buffer.charAt(buffer.length()-1)!='\n') {return false;}
-        else return matcher.find();
+        if (leftNewlineIndex == -1 || rightSpaceIndex == -1) { return false; } // 如果没找到左边的换行符或右边的制表符
+        else if (check1 > index || check2 > index) { return false; } // 如果“---”的右边有“—”或“—”的右边有“---”
+        else if(buffer.charAt(buffer.length()-1)!='\n') { return false; } // 如果最右边不是换行符
+        else return matcher.find(); //最右边（不包括换行符）能找到数字或小数
     }
 
     public ArrayList<Character> getLinelist() {
         return linelist;
     }
 
-    public void setLinelist(ArrayList<Character> linelist) {
-        this.linelist = linelist;
-    }
-
     public ArrayList<Character> getBufferlist() {
         return bufferlist;
     }
 
-    public void setBufferlist(ArrayList<Character> bufferlist) {
-        this.bufferlist = bufferlist;
-    }
-
     public Map<String, Set<String>> getTransforStationlist() {
         return TransforStationlist;
-    }
-
-    public void setTransforStationlist(Map<String, Set<String>> transforStationlist) {
-        TransforStationlist = transforStationlist;
     }
 }

@@ -1,4 +1,4 @@
-import test.Test3;
+import test.*;
 
 import java.io.IOException;
 
@@ -7,8 +7,8 @@ public class App {
         //new SystemStartJFrame();
         //new Test1().test1();
         //new Test2().test2();
-        new Test3().test3();
-        //new Test4().test4();
+        //new Test3().test3();
+        new Test4().test4();
 
     }
 }

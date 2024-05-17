@@ -10,25 +10,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Test2 extends Test1{
-    private Map<Station,Set<AdjacentStation>> stationAndNext = new HashMap<>();
-    private Map<Station, Double> distanceMap = new HashMap<>();
+    private Map<Station,Set<AdjacentStation>> stationAndNext = new HashMap<>(); // 记录站点及其所有相邻站
+    private Map<Station, Double> distanceMap = new HashMap<>(); // 记录站点及其距离起始站的最短距离
 
     public void test2() throws IOException{
-        this.readtxt1();
+        this.readtxt1(); // 获取TransforStationlist的数据
         this.readtxt2();
         Scanner scanner = new Scanner(System.in);
         System.out.println("请输入站点名：");
         String startStationName = scanner.nextLine();
         System.out.println("请输入距离n：");
         double n = scanner.nextDouble();
-        // 查找起始站点
-        Station startStation = this.findStationByName(stationAndNext.keySet(), startStationName);
+        Station startStation = this.findStationByName(stationAndNext.keySet(), startStationName); // 查找起始站点
         if (startStation == null) {
             System.out.println("起始站点未找到！");
             return;
         }
-        // 执行BFS搜索
-        this.bfs(stationAndNext, startStation, n);
+        this.dijkstra(stationAndNext, startStation, n); // 执行Dijkstra
         for (Map.Entry<Station, Double> entry : distanceMap.entrySet()) {
             String station = entry.getKey().getName();
             System.out.print("<" + station + ", ");
@@ -36,39 +34,39 @@ public class Test2 extends Test1{
             for (String line : getTransforStationlist().get(station)) {
                 sb.append(line).append("、");
             }
-            sb.setLength(sb.length() - 1);//移除最后一个顿号
+            sb.setLength(sb.length() - 1);
             sb.append(", ");
             String transfor = sb.toString();
             System.out.print(transfor);
-            System.out.println(String.format("%.3f",entry.getValue()) + ">");
+            System.out.println(String.format("%.3f",entry.getValue()) + ">"); // 输出3位小数，因为double在计算过程中因为进制转换而丢失精度
         }
     }
-
-    public void bfs(Map<Station, Set<AdjacentStation>> stationAndNext, Station startStation, double n) {
-        LinkedList<Station> queue = new LinkedList<>();
-        Set<Station> visited = new HashSet<>();
-        queue.offer(startStation);
+    // Dijkstra搜索
+    public void dijkstra(Map<Station, Set<AdjacentStation>> stationAndNext, Station startStation, double n) {
+        PriorityQueue<AdjacentStation> pq = new PriorityQueue<>(); // 建立优先级队列
+        pq.add(new AdjacentStation(startStation, 0.0));
         distanceMap.put(startStation, 0.0);
-        visited.add(startStation);
-
-        while (!queue.isEmpty()) {
-            Station currentStation = queue.poll();
-            visited.add(currentStation);
-            double currentDistance = distanceMap.get(currentStation);
-            for (AdjacentStation adjacent : stationAndNext.get(currentStation)) {
+        while (!pq.isEmpty()) {
+            AdjacentStation current = pq.poll(); // 将队列中第1位赋值给current并从队列中删除
+            Station currentStation = current.getStation();
+            double currentDistance = current.getDistance();
+            if (currentDistance >= n) {
+                continue; // 如果获取的站点距离不小于输入距离则重新开始循环
+            }
+            for (AdjacentStation adjacent : stationAndNext.get(currentStation)) { // 遍历当前车站所有的相邻站
                 Station nextStation = adjacent.getStation();
-                double nextDistance = currentDistance + adjacent.getDistance();
-                if (nextDistance < n && !visited.contains(nextStation)) {
-                    visited.add(adjacent.getStation());
-                    queue.offer(nextStation);
-                    distanceMap.put(nextStation, nextDistance);
+                double newDist = currentDistance + adjacent.getDistance(); // 更新累计距离
+                // 从distanceMap中查找相邻的下一站距离
+                if (newDist < distanceMap.getOrDefault(nextStation, Double.MAX_VALUE) && newDist < n) {
+                    distanceMap.put(nextStation, newDist); // 如果更小则添加或更新distanceMap
+                    pq.add(new AdjacentStation(nextStation, newDist)); // 往队列中添加下一站
                 }
             }
         }
         distanceMap.remove(startStation);
     }
-
-    public Station findStationByName (Set < Station > stations, String name){
+    // 通过站点名来查找站点并返回
+    public Station findStationByName (Set <Station> stations, String name){
         for (Station station : stations) {
             if (station.getName().equals(name)) {
                 return station;
@@ -76,7 +74,7 @@ public class Test2 extends Test1{
         }
         return null;
     }
-
+    // 读取文件往stationAndNext中添加数据
     public void readtxt2() throws IOException {
         FileReader subwaytxt = new FileReader("C:\\Users\\zhong\\source\\wuhansubwaysystem\\subway.txt");
         int sub;
@@ -94,7 +92,7 @@ public class Test2 extends Test1{
         stationAndNext.remove(null);
         subwaytxt.close();
     }
-
+    // 获得距离
     public double getdistance(String buffer){
         Pattern pattern = Pattern.compile("(?s).*(\\t[0-9](\\.[0-9]+)?)$");
         Matcher matcher = pattern.matcher(buffer);
@@ -102,12 +100,10 @@ public class Test2 extends Test1{
         String lastMatch = matcher.group(1);
         return Double.parseDouble(lastMatch);
     }
-
+    // 添加站点
     public void addstation(String buffer, String connector){
         Station Station1 = new Station(this.getStationLeft(buffer, buffer.lastIndexOf(connector)));
         Station Station2 = new Station(this.getStationRight(buffer, buffer.lastIndexOf(connector), connector));
-
-        // 如果键不在Map中，则创建一个新的HashSet并添加到Map中
         if (!stationAndNext.containsKey(Station1)) {
             stationAndNext.put(Station1, new TreeSet<>());
         }
