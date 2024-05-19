@@ -1,3 +1,7 @@
+/**
+ * 输入某一站点，输出线路距离小于 n 的所有站点集合，包含站点名称、所在线路、距离给定站点的距离（输入不合规时进行异常处理）
+ * （例如：华中科技大学站，距离为 1 的站点为<<珞雄路站，2号线，1>, <光谷大道站，2号线，1>>）
+**/
 package test;
 
 import station.AdjacentStation;
@@ -38,7 +42,7 @@ public class Test2 extends Test1{
             sb.append(", ");
             String transfor = sb.toString();
             System.out.print(transfor);
-            System.out.println(String.format("%.3f",entry.getValue()) + ">"); // 输出3位小数，因为double在计算过程中因为进制转换而丢失精度
+            System.out.println(String.format("%.3f", entry.getValue()) + ">"); // 输出3位小数，因为double在计算过程中因为进制转换而丢失精度
         }
     }
     // Dijkstra搜索

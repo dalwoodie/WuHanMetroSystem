@@ -1,4 +1,4 @@
-import test.*;
+import test.Test67;
 
 import java.io.IOException;
 
@@ -9,7 +9,8 @@ public class App {
         //new Test2().test2();
         //new Test3().test3();
         //new Test4().test4();
-        new Test5().test5();
+        //new Test5().test5();
+        new Test67().test6();
 
     }
 }

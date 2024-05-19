@@ -1,3 +1,6 @@
+/**
+ * 输入起点站和终点站的名称，返回一个包含连接起点和终点的所有路径的集合，每条路径经过的站点不重复（即不包含环路）
+**/
 package test;
 
 import station.AdjacentStation;
@@ -19,35 +22,34 @@ public class Test3 extends Test2 {
     // 输入并执行DFS
     public void scannerAndDFS() throws IOException {
         this.readtxt2();
-        try (Scanner scanner = new Scanner(System.in)) {
-            System.out.println("请输入起始站站点名：");
-            String start = scanner.nextLine();
-            System.out.println("请输入终点站站点名：");
-            String destination = scanner.nextLine();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("请输入起始站站点名：");
+        String start = scanner.nextLine();
+        System.out.println("请输入终点站站点名：");
+        String destination = scanner.nextLine();
 
-            Station startStation = findStationByName(getStationAndNext().keySet(), start);
-            Station destinationStation = findStationByName(getStationAndNext().keySet(), destination);
-            if (startStation != null && destinationStation != null) {
-                // 循环执行DFS，次数最多为两站点相邻站数量的最小值maxSearch
-                int maxSearch = Math.min(getStationAndNext().get(startStation).size(), getStationAndNext().get(destinationStation).size());
-                for (int i = 0; i < maxSearch; i++) {
-                    List<List<Station>> allPath = new ArrayList<>();
-                    dfs(new ArrayList<>(), startStation, destinationStation, 0, allPath);
-                    shortestDistanceCache.clear();
-                    if (allPath.size() != 0 && allPaths.size() < maxSearch){
-                        for (List<Station> path : allPath) {
-                            for (int j = 1; j < path.size()-1; j++) {
-                                visited.add(path.get(j));
-                            }
-                            if (!allPaths.contains(path)) {
-                            allPaths.add(path);
-                            }
+        Station startStation = findStationByName(getStationAndNext().keySet(), start);
+        Station destinationStation = findStationByName(getStationAndNext().keySet(), destination);
+        if (startStation != null && destinationStation != null) {
+            // 循环执行DFS，次数最多为两站点相邻站数量的最小值maxSearch
+            int maxSearch = Math.min(getStationAndNext().get(startStation).size(), getStationAndNext().get(destinationStation).size());
+            for (int i = 0; i < maxSearch; i++) {
+                List<List<Station>> allPath = new ArrayList<>();
+                dfs(new ArrayList<>(), startStation, destinationStation, 0, allPath);
+                shortestDistanceCache.clear();
+                if (allPath.size() != 0 && allPaths.size() < maxSearch){
+                    for (List<Station> path : allPath) {
+                        for (int j = 1; j < path.size()-1; j++) {
+                            visited.add(path.get(j));
                         }
-                    } else break; // 这一轮获取的路径集合为空或总路径集合中路径数达到maxSearch时结束循环
-                }
-            } else {
-                System.out.println("起始站点或终点站点未找到！");
+                        if (!allPaths.contains(path)) {
+                            allPaths.add(path);
+                        }
+                    }
+                } else break; // 这一轮获取的路径集合为空或总路径集合中路径数达到maxSearch时结束循环
             }
+        } else {
+            System.out.println("起始站点或终点站点未找到！");
         }
     }
     // DFS搜索
@@ -107,8 +109,10 @@ public class Test3 extends Test2 {
     }
     // 打印所有找到的路径
     public void printAllPaths() {
+        int i = 1;
         for (List<Station> P : allPaths) {
-            System.out.print("<");
+            System.out.print("线路" + i + "：<");
+            i++;
             StringBuilder sb = new StringBuilder();
             for (Station station : P) {
                 sb.append(station.getName()).append("、");
