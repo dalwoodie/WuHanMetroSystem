@@ -34,7 +34,7 @@ public class Test3 extends Test2 {
                     List<List<Station>> allPath = new ArrayList<>();
                     dfs(new ArrayList<>(), startStation, destinationStation, 0, allPath);
                     shortestDistanceCache.clear();
-                    if (allPath.size() != 0){
+                    if (allPath.size() != 0 && allPaths.size() < maxSearch){
                         for (List<Station> path : allPath) {
                             for (int j = 1; j < path.size()-1; j++) {
                                 visited.add(path.get(j));
@@ -43,7 +43,7 @@ public class Test3 extends Test2 {
                             allPaths.add(path);
                             }
                         }
-                    } else break; // 这一轮获取的路径集合为空时结束循环
+                    } else break; // 这一轮获取的路径集合为空或总路径集合中路径数达到maxSearch时结束循环
                 }
             } else {
                 System.out.println("起始站点或终点站点未找到！");
