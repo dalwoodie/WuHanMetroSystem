@@ -80,7 +80,7 @@ public class Test2 extends Test1{
     }
     // 读取文件往stationAndNext中添加数据
     public void readtxt2() throws IOException {
-        FileReader subwaytxt = new FileReader("C:\\Users\\zhong\\source\\wuhansubwaysystem\\subway.txt");
+        FileReader subwaytxt = new FileReader("subway.txt");
         int sub;
         while ((sub = subwaytxt.read()) != -1) {
             this.addline((char) sub);

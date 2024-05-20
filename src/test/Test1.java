@@ -1,6 +1,6 @@
 /**
  * 在所有地铁车站中，识别出所有的地铁中转站（即至少有两条线经过该站），
- * 并返回一个包含所有地铁中转站的集合，集合中的每条记录包含站点名称、通过的所有线路（如：<中南路站，<2 号线、4 号线>>）
+ * 并返回一个包含所有地铁中转站的集合，集合中的每条记录包含站点名称、通过的所有线路（如：<中南路，<2号线、4号线>>）
 **/
 package test;
 
@@ -35,7 +35,7 @@ public class Test1 {
     }
     // 读取文件往TransforStationlist中添加数据
     public void readtxt1() throws IOException {
-        FileReader subwaytxt = new FileReader("C:\\Users\\zhong\\source\\wuhansubwaysystem\\subway.txt");
+        FileReader subwaytxt = new FileReader("subway.txt");
         int sub;
         String line = "";
         while ((sub = subwaytxt.read()) != -1) {

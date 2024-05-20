@@ -33,9 +33,8 @@ public class SystemStartJFrame extends JFrame {
 
     private void initJFrame() {
         //设置界面
-        this.setSize(1080,720);
+        this.setSize(600,450);
         this.setTitle("武汉地铁系统");
-        this.setAlwaysOnTop(true);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
