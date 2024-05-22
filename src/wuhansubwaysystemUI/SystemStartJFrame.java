@@ -1,3 +1,4 @@
+//练手用，已废弃
 package wuhansubwaysystemUI;
 
 import javax.swing.*;
