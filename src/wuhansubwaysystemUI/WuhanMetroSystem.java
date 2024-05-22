@@ -1,22 +1,22 @@
-package wuhansubwaysystemUI;
+package wuhanmetrosystemUI;
 
 import station.Station;
-import test.Test1;
-import test.Test2;
+import test.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 public class WuhanMetroSystem extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainPanel;
     private JTextArea resultAreaStations, resultAreaRoutes;
     private JTextField stationNameField, distanceField, startStationField, endStationField, routeChoiceField;
-    private JComboBox<String> paymentComboBox;
     private Test1 test1 = new Test1();
     private Test2 test2 = new Test2();
+    private Test3 test3 = new Test3();
 
     public WuhanMetroSystem() {
         setTitle("武汉地铁系统");
@@ -125,11 +125,11 @@ public class WuhanMetroSystem extends JFrame {
         topRightPanel.setLayout(new BoxLayout(topRightPanel, BoxLayout.Y_AXIS));
         JButton allRoutesButton = new JButton("查询所有路径");
         JButton shortestRouteButton = new JButton("选择最短路径");
-        JLabel routeChoiceLabel = new JLabel("选择线路");
+        JLabel routeChoiceLabel = new JLabel("选择线路（填写线路后的数字）");
         routeChoiceField = new JTextField();
         JButton confirmButton = new JButton("确定");
         JLabel paymentLabel = new JLabel("选择付款方式");
-        paymentComboBox = new JComboBox<>(new String[]{"普通单程票", "武汉通", "日票"});
+        JComboBox<String> paymentComboBox = new JComboBox<>(new String[]{"普通单程票", "武汉通", "日票"});
         JButton payButton = new JButton("支付");
         JButton backButton = new JButton("返回");
 
@@ -164,6 +164,9 @@ public class WuhanMetroSystem extends JFrame {
     }
 
     private void queryNearbyStations() {
+        test2.getStationAndNext().clear();
+        test2.getDistanceMap().clear();
+
         resultAreaStations.setText("");
         String stationName = stationNameField.getText();
         String distance = distanceField.getText();
@@ -178,12 +181,12 @@ public class WuhanMetroSystem extends JFrame {
             resultAreaStations.setText("输入站点未找到！");
             return;
         }
-        double distanceValue = 0;
+        double distanceValue;
         try {
             distanceValue = Double.parseDouble(distance);
         } catch (NumberFormatException e) {
             resultAreaStations.setText("距离格式错误！");
-            e.printStackTrace();
+            return;
         }
         if (distanceValue < 0){
             resultAreaStations.setText("距离应大于0！");
@@ -204,8 +207,6 @@ public class WuhanMetroSystem extends JFrame {
             String transfor = sb.toString();
             resultAreaStations.append(transfor + "\n");
         }
-        test2.getStationAndNext().clear();
-        test2.getDistanceMap().clear();
     }
 
     private void queryTransferStations() {
@@ -232,33 +233,158 @@ public class WuhanMetroSystem extends JFrame {
     }
 
     private void queryAllRoutes() {
-        String startStation = startStationField.getText();
-        String endStation = endStationField.getText();
-        // TODO: Implement the logic to query all routes based on startStation and endStation
-        String result = "查询结果：所有路径信息\n"; // Placeholder for actual result
-        resultAreaRoutes.setText(result);
+        searchAllRoutes();
+        resultAreaRoutes.append("查询结果：所有路径信息\n");
+        int j = 1;
+        for (List<Station> P : test3.getAllPaths()) {
+            resultAreaRoutes.append("线路" + j + "：");
+            j++;
+            printSimplyLine(P);
+        }
     }
 
     private void queryShortestRoute() {
-        // TODO: Implement the logic to query the shortest route
-        String result = "查询结果：最短路径信息\n"; // Placeholder for actual result
-        resultAreaRoutes.append(result);
+        searchAllRoutes();
+        resultAreaRoutes.append("查询结果：最短路径信息\n");
+        List<Station> shortestPath = null;
+        double shortestDistance = Double.MAX_VALUE;
+        for (List<Station> path : test3.getAllPaths()) {
+            double distance = test3.getAllPathAndDistances().get(path);
+            if (distance < shortestDistance) {
+                shortestDistance = distance;
+                shortestPath = path;
+            }
+        }
+        if (shortestPath == null || shortestPath.isEmpty()){
+            resultAreaRoutes.append("无\n");
+            return;
+        }
+        printSimplyLine(shortestPath);
+        double distance = test3.getAllPathAndDistances().get(shortestPath);
+        Test67 test67 = new Test67();
+        resultAreaRoutes.append("普通单程票票价：" + (test67.price(distance) - test67.price(distance)%1) + "元\n");
+        resultAreaRoutes.append("武汉通票价：" + (test67.price(distance) - test67.price(distance)%1) * 0.9 + "元\n");
+        resultAreaRoutes.append("日票票价：" + 0 + "元\n");
     }
 
     private void confirmRouteChoice() {
         String routeChoice = routeChoiceField.getText();
-        // TODO: Implement the logic to confirm route choice based on routeChoice
-        String result = "确认结果：选择线路信息\n"; // Placeholder for actual result
-        resultAreaRoutes.append(result);
+        int num;
+        try {
+            num = Integer.parseInt(routeChoice);
+        } catch (NumberFormatException e) {
+            resultAreaRoutes.setText("线路格式错误！");
+            return;
+        }
+        searchAllRoutes();
+        if (num > test3.getAllPaths().size()){
+            resultAreaRoutes.setText("输入错误！");
+            return;
+        }
+        resultAreaRoutes.append("查询结果：选择路径信息\n");
+        List<Station> selectedPath = test3.getAllPaths().get(num - 1);
+        printSimplyLine(selectedPath);
+        double distance = test3.getAllPathAndDistances().get(selectedPath);
+        Test67 test67 = new Test67();
+        resultAreaRoutes.append("普通单程票票价：" + (test67.price(distance) - test67.price(distance)%1) + "元\n");
+        resultAreaRoutes.append("武汉通票价：" + (test67.price(distance) - test67.price(distance)%1) * 0.9 + "元\n");
+        resultAreaRoutes.append("日票票价：" + 0 + "元\n");
     }
 
+    private void searchAllRoutes() {
+        test3.getAllPaths().clear();
+        test3.getShortestDistanceCache().clear();
+        test3.getVisited().clear();
+        resultAreaRoutes.setText("");
+
+        String startstation = startStationField.getText();
+        String endStation = endStationField.getText();
+        try {
+            test1.readtxt1();
+            test3.readtxt2();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Station startStation = test3.findStationByName(test3.getStationAndNext().keySet(), startstation);
+        Station destinationStation = test3.findStationByName(test3.getStationAndNext().keySet(), endStation);
+        if (startStation != null && destinationStation != null) {
+            int maxSearch = Math.min(test3.getStationAndNext().get(startStation).size(), test3.getStationAndNext().get(destinationStation).size());
+            for (int i = 0; i < maxSearch; i++) {
+                List<List<Station>> allPath = new ArrayList<>();
+                test3.dfs(new ArrayList<>(), startStation, destinationStation, 0, allPath);
+                test3.getShortestDistanceCache().clear();
+                if (allPath.size() != 0 && test3.getAllPaths().size() < maxSearch){
+                    for (List<Station> path : allPath) {
+                        for (int j = 1; j < path.size()-1; j++) {
+                            test3.getVisited().add(path.get(j));
+                        }
+                        if (!test3.getAllPaths().contains(path)) {
+                            test3.getAllPaths().add(path);
+                        }
+                    }
+                } else {
+                    break;
+                }
+            }
+        } else {
+            resultAreaRoutes.setText("起始站点或终点站点未找到！\n");
+        }
+    }
+
+    private void printSimplyLine(List<Station> P) {
+        int i = 0;
+        List<String> nowLine = new ArrayList<>();
+        Set<String> sameLine = new HashSet<>(test1.getTransforStationlist().get(P.get(0).getName()));
+
+        for (; i < P.size() - 1; i++){
+            String current = P.get(i).getName();
+            String next = P.get(i + 1).getName();
+            Set<String> currentLines = new HashSet<>(test1.getTransforStationlist().get(current));
+            Set<String> nextLines = new HashSet<>(test1.getTransforStationlist().get(next));
+
+            currentLines.retainAll(nextLines);
+            sameLine.retainAll(currentLines);
+            if (sameLine.isEmpty()){
+                resultAreaRoutes.append("乘" + nowLine.get(0) + ":[" + P.get(0) + "，" + current + "]，");
+                sameLine.clear();
+                sameLine.addAll(test1.getTransforStationlist().get(P.get(i).getName()));
+                break;
+            }else if (i == P.size() - 2){
+                resultAreaRoutes.append("乘" + nowLine.get(0) + ":[" + P.get(0) + "，" + next + "]\n");
+                resultAreaRoutes.append("长度：" + String.format("%.3f",test3.getAllPathAndDistances().get(P)) + "KM\n");
+            }
+            nowLine.clear();
+            nowLine.addAll(sameLine);
+        }
+        printTransfer(P, i, nowLine, sameLine);
+    }
+
+    private void printTransfer(List<Station> selectedPath, int i, List<String> nowLine, Set<String> sameLine) {
+        String start = selectedPath.get(i).getName();
+        for (; i < selectedPath.size() - 1; i++){
+            String current = selectedPath.get(i).getName();
+            String next = selectedPath.get(i + 1).getName();
+            Set<String> currentLines = new HashSet<>(test1.getTransforStationlist().get(current));
+            Set<String> nextLines = new HashSet<>(test1.getTransforStationlist().get(next));
+
+            currentLines.retainAll(nextLines);
+            sameLine.retainAll(currentLines);
+            if (sameLine.isEmpty() && i < selectedPath.size() - 2){
+                resultAreaRoutes.append("换乘" + nowLine.get(0) + ":[" + start + "，" + current + "]，");
+                sameLine.clear();
+                sameLine.addAll(test1.getTransforStationlist().get(selectedPath.get(i).getName()));
+                printTransfer(selectedPath, i, nowLine, sameLine);
+                break;
+            } else if(i == selectedPath.size() - 2){
+                resultAreaRoutes.append("换乘" + nowLine.get(0) + ":[" + start + "，" + next + "]\n");
+                resultAreaRoutes.append("长度：" + String.format("%.3f", test3.getAllPathAndDistances().get(selectedPath)) + "KM\n");
+                break;
+            }
+            nowLine.clear();
+            nowLine.addAll(sameLine);
+        }
+    }
     private void showAuthorInfo() {
-        JOptionPane.showMessageDialog(this, "作者信息：\n姓名：钟笑\n学号：U202211723\n班级：工程管理2201班");
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            WuhanMetroSystem wms = new WuhanMetroSystem();
-        });
+        JOptionPane.showMessageDialog(this, "作者信息：\n姓名：钟笑\n学号：U202211723\n班级：HUST工程管理2201班");
     }
 }

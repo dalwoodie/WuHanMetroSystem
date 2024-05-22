@@ -121,16 +121,7 @@ public class Test2 extends Test1{
     public Map<Station, Set<AdjacentStation>> getStationAndNext() {
         return stationAndNext;
     }
-
-    public void setStationAndNext(Map<Station, Set<AdjacentStation>> stationAndNext) {
-        this.stationAndNext = stationAndNext;
-    }
-
     public Map<Station, Double> getDistanceMap() {
         return distanceMap;
-    }
-
-    public void setDistanceMap(Map<Station, Double> distanceMap) {
-        this.distanceMap = distanceMap;
     }
 }

@@ -71,7 +71,7 @@ public class Test3 extends Test2 {
         path.remove(path.size() - 1); // 回溯时移除当前站点
     }
     // 判断是否需要剪枝
-    private boolean shouldPrune(Station nextStation, double newDistance) {
+    public boolean shouldPrune(Station nextStation, double newDistance) {
         if (shortestDistanceCache.containsKey(nextStation)) { // 如果缓存中有下一站点的最短距离
             double cachedDistance = shortestDistanceCache.get(nextStation);
             // 如果新的距离大于等于缓存的距离
@@ -101,7 +101,7 @@ public class Test3 extends Test2 {
         }
     }
     // 判断两条路径是否有重复站点
-    private boolean hasDuplicateStations(List<Station> path1, List<Station> path2) {
+    public boolean hasDuplicateStations(List<Station> path1, List<Station> path2) {
         Set<Station> set1 = new HashSet<>(path1.subList(1, path1.size() - 1)); // 排除起始站和终点站
         Set<Station> set2 = new HashSet<>(path2.subList(1, path2.size() - 1));
         set1.retainAll(set2); // 保留共同元素

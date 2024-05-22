@@ -26,7 +26,6 @@ public class Test5 extends Test4{
         int i = 0;
         List<String> nowLine = new ArrayList<>();
         Set<String> sameLine = new HashSet<>(getTransforStationlist().get(selectedPath.get(0).getName()));
-
         for (; i < selectedPath.size() - 1; i++){
             String current = selectedPath.get(i).getName();
             String next = selectedPath.get(i + 1).getName();
@@ -40,6 +39,8 @@ public class Test5 extends Test4{
                 sameLine.clear();
                 sameLine.addAll(getTransforStationlist().get(selectedPath.get(i).getName()));
                 break;
+            }else if (i == selectedPath.size() - 2){
+                System.out.print("乘" + nowLine.get(0) + ":[" + selectedPath.get(0) + "，" + next + "]");
             }
             nowLine.clear();
             nowLine.addAll(sameLine);
