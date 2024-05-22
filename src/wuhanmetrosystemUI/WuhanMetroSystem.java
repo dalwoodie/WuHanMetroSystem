@@ -1,4 +1,4 @@
-package wuhansubwaysystemUI;
+package wuhanmetrosystemUI;
 
 import station.Station;
 import test.*;
