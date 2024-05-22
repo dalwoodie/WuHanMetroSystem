@@ -4,14 +4,12 @@ import java.util.Objects;
 
 public class Station {
     private String name;
-    private boolean visited;
 
     public Station() {
     }
 
     public Station(String name) {
         this.name = name;
-        this.visited = false;
     }
 
     public String getName() {
@@ -20,14 +18,6 @@ public class Station {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public boolean isVisited() {
-        return visited;
-    }
-
-    public void setVisited(boolean visited) {
-        this.visited = visited;
     }
 
     @Override
