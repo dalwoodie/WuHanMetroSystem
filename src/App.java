@@ -1,4 +1,4 @@
-import wuhanmetrosystemUI.WuhanMetroSystem;
+import wuhansubwaysystemUI.WuhanMetroSystem;
 
 import javax.swing.*;
 import java.io.IOException;
